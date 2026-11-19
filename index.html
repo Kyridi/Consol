@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>KYRIDI — карманное портфолио</title>
+  <style>
+    :root {
+      --ink: #201f1b;
+      --paper: #eeeae2;
+      --muted: #57554e;
+      --line: #b7b0a4;
+      --red: #b62e25;
+      --lcd: #c1cc85;
+      --lcd-ink: #17220e;
+      --mono: 'Cascadia Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: radial-gradient(ellipse at 52% 42%, #f8f5ed 0%, var(--paper) 62%, #e5dfd3 100%);
+      font: 15px/1.5 system-ui, sans-serif;
+    }
+    button { font: inherit; cursor: pointer; }
+    :is(button, a):focus-visible { outline: 3px solid #a1461f; outline-offset: 4px; }
+    h1, h2, p, dl, dd { margin: 0; }
+    .page { width: min(100% - 7vw, 1440px); margin: auto; }
+    .layout {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-columns: minmax(190px, 1fr) minmax(400px, 1.9fr) minmax(170px, .8fr);
+      align-items: center;
+      gap: clamp(22px, 4vw, 64px);
+      min-height: 100svh;
+      padding-block: 27px 36px;
+    }
+    .backdrop {
+      position: absolute;
+      z-index: -1;
+      inset: 0 23%;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: #5046330d;
+      pointer-events: none;
+      user-select: none;
+      font: 850 clamp(65px, 11.5vw, 165px)/1 system-ui, sans-serif;
+      letter-spacing: .045em;
+      mask-image: linear-gradient(90deg, transparent, #000 11% 89%, transparent);
+    }
+    .intro { max-width: 325px; }
+    .eyebrow {
+      color: var(--muted);
+      font: 700 11px/1.45 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    h1 { margin-block: 17px 14px; font: 400 clamp(35px, 4.85vw, 73px)/.94 Georgia, serif; letter-spacing: -.079em; }
+    h1 em { display: block; color: var(--red); font-weight: inherit; }
+    .intro .disciplines { max-width: 26ch; margin-top: 24px; color: var(--muted); }
+    .help { max-width: 240px; }
+    .help h2 { margin-top: 8px; font: 400 clamp(24px, 2.6vw, 37px)/1.03 Georgia, serif; letter-spacing: -.055em; }
+    .help-note { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .help dl { display: grid; margin-top: 16px; border-top: 1px solid var(--line); }
+    .help dl div { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: 10px; padding-block: 9px; border-bottom: 1px solid #b7b0a47a; }
+    .help dt { display: flex; align-items: center; gap: 3px; color: var(--muted); }
+    .help dd { color: var(--ink); font-size: 12px; line-height: 1.38; }
+    .help kbd {
+      display: inline-grid;
+      place-items: center;
+      min-width: 18px;
+      min-height: 19px;
+      padding-inline: 2px;
+      border: 1px solid #a7a193;
+      border-radius: 3px;
+      color: var(--ink);
+      background: #f8f4ea;
+      box-shadow: 0 1px #c6bbab;
+      font: 700 9px/1 var(--mono);
+    }
+    .help kbd.accent-key { color: #92271d; border-color: #bf8777; background: #f5e6db; }
+    .stage { display: grid; justify-items: center; min-width: 0; isolation: isolate; }
+    .console {
+      position: relative;
+      width: min(100% - 22px, 416px);
+      padding: 20px 24px 21px;
+      container-type: inline-size;
+      border: 1px solid #575b50;
+      border-radius: 24px 24px 51px 24px;
+      color: #f5eddf;
+      background:
+        radial-gradient(circle, #dedfbe17 .39px, transparent .74px) 0 0 / 3px 3px,
+        radial-gradient(ellipse at 5% 0%, #8a8b7072, transparent 48%),
+        linear-gradient(147deg, #44483e, #30342c 49%, #20241e 90%);
+      box-shadow: inset 1px 1px 1px #d6d3ae66, inset -4px -7px 10px #13160f9c,
+        1px 2px #6d6f5b, 4px 4px 0 1px #55594c, 7px 7px #363a31,
+        10px 10px 0 1px #22261e, 12px 12px #404437, 13px 13px #1c2119,
+        18px 21px 24px #2a261e5c, 30px 42px 66px #41382c3b;
+      transform: rotate(-6deg);
+    }
+    .console::before, .console::after { position: absolute; content: ''; pointer-events: none; }
+    .console::before {
+      inset: 5px;
+      border: 1px solid #d7dab127;
+      border-right-color: #11140f8f;
+      border-bottom-color: #11140f9c;
+      border-radius: 18px 18px 44px 18px;
+    }
+    .console::after {
+      inset-block-start: 25%;
+      inset-inline-end: -9px;
+      width: 4px;
+      height: 69px;
+      border-radius: 4px;
+      background: repeating-linear-gradient(#131811 0 3px, #6b6d5640 3px 4px, transparent 4px 7px);
+      box-shadow: 1px 1px #b2ae852b;
+    }
+    .topline, .device-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      font: 700 9px/1.2 var(--mono);
+      letter-spacing: .12em;
+    }
+    .topline { margin-bottom: 13px; color: #e4dfd1; }
+    .device-brand { font: 850 clamp(15px, 6cqw, 23px)/1 system-ui, sans-serif; letter-spacing: -.085em; }
+    .power {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 2px;
+      border: 0;
+      border-radius: 4px;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      letter-spacing: .035em;
+    }
+    .power-label { color: #c2bcaa; }
+    .power[aria-pressed='true'] .power-on, .power[aria-pressed='false'] .power-off { color: #ffefcf; }
+    .power-track {
+      position: relative;
+      display: block;
+      width: 61px;
+      height: 23px;
+      border: 1px solid #131610;
+      border-radius: 5px;
+      background: #191d16;
+      box-shadow: inset 0 2px 4px #0d100cb3, 0 1px #a2a18463;
+    }
+    .power-thumb {
+      position: absolute;
+      inset: 2px auto 2px 2px;
+      width: 26px;
+      border: 1px solid #24261e;
+      border-radius: 3px;
+      background: repeating-linear-gradient(90deg, #24261c5c 0 1px, transparent 1px 4px) center / 15px 8px no-repeat,
+        linear-gradient(#a7a58a, #777b64 60%, #505644);
+      box-shadow: inset 0 1px #e2dfb39c, 0 1px 2px #000b;
+      transition: transform 170ms cubic-bezier(.2, .75, .2, 1);
+    }
+    .power[aria-pressed='true'] .power-thumb { transform: translateX(29px); }
+    .power-led { width: 6px; height: 6px; margin-inline-start: 2px; border-radius: 50%; background: #693729; box-shadow: 0 0 0 1px #24231a; }
+    .power[aria-pressed='true'] .power-led { background: #ff9075; box-shadow: 0 0 4px #ff583c, 0 0 12px #ff583ca3; }
+    .console button:focus-visible { outline-color: #ffb7a4; }
+    .bezel {
+      padding: 12px 12px 8px;
+      border: 1px solid #121615;
+      border-radius: 12px 12px 24px 12px;
+      background: linear-gradient(160deg, #191c19, #2c302a);
+      box-shadow: 0 1px #7a7c6c, inset 0 2px 5px #0a0b0bd9;
+    }
+    .lcd {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+      height: clamp(287px, 44svh, 349px);
+      padding: 13px 16px;
+      border: 2px solid #11180b;
+      border-radius: 5px;
+      color: var(--lcd-ink);
+      background: radial-gradient(ellipse at 52% 59%, #dbe3a0, var(--lcd) 62%, #9dad6a 100%);
+      box-shadow: inset 0 3px 11px #263418a6, inset 0 -1px 5px #4d5d33a6, 0 1px #626c4a;
+      overflow: hidden;
+      font: 700 14px/1.3 var(--mono);
+    }
+    .lcd::before, .lcd::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .lcd::before {
+      z-index: 0;
+      background:
+        linear-gradient(transparent 75%, #29341619 0) 0 0 / 100% 3px,
+        linear-gradient(90deg, transparent 75%, #2934160e 0) 0 0 / 3px 100%;
+    }
+    .lcd::after {
+      z-index: 2;
+      background: linear-gradient(128deg, #ffffd747, #ffffd713 31%, transparent 45%);
+      opacity: .53;
+    }
+    .lcd.off { background: radial-gradient(ellipse at 50% 44%, #727c58, #566144); }
+    .lcd.off::after { opacity: .4; }
+    .lcd.booting::after { animation: wake-glass 850ms ease-out both; }
+    .lcd.shutting-down::after { animation: lcd-darken 440ms ease-out both; }
+    .lcd.shutting-down :is(.lcd-top, .screen, .lcd-bottom) { animation: lcd-afterimage 440ms ease-out both; }
+    @keyframes lcd-darken {
+      from { background-color: transparent; }
+      to { background-color: #526044; opacity: .98; }
+    }
+    @keyframes lcd-afterimage {
+      0% { opacity: 1; }
+      22% { opacity: .65; filter: blur(.35px); }
+      65% { opacity: .24; filter: blur(1px); }
+      100% { opacity: 0; filter: blur(1.4px); }
+    }
+    @keyframes wake-glass { 0% { background-color: #233117d9; } 35% { background-color: #e8f0b249; } 100% { background-color: transparent; } }
+    .lcd-top, .lcd-bottom, .screen { position: relative; z-index: 1; }
+    .lcd-top, .lcd-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3px;
+      color: #2a3519;
+      font-size: 10px;
+      letter-spacing: .035em;
+      text-transform: uppercase;
+    }
+    .lcd-top { padding-bottom: 4px; border-bottom: 1px solid #4a592d70; }
+    .lcd-bottom { padding-top: 4px; border-top: 1px solid #4a592d70; }
+    .lcd.off :is(.lcd-top, .lcd-bottom), .lcd.booting :is(.lcd-top, .lcd-bottom) { visibility: hidden; }
+    .screen { display: grid; align-content: center; min-height: 0; }
+    .screen:not([data-view='boot'], [data-view='off']) { align-content: stretch; }
+    .screen.change { animation: update-screen 245ms ease-out; }
+    @keyframes update-screen {
+      0% { opacity: .3; transform: translateY(3px) scaleY(.97); filter: blur(.75px); }
+      42% { opacity: .85; }
+    }
+    .device-label { color: #d1d3bd; margin: 7px 3px 1px; font-size: 9px; }
+    .boot { display: grid; justify-items: center; gap: 11px; }
+    .boot strong { font-size: 21px; letter-spacing: -.06em; }
+    .boot-track { width: 58%; border: 1px solid var(--lcd-ink); padding: 2px; }
+    .boot-fill { height: 5px; background: var(--lcd-ink); transform-origin: left; animation: boot 1s steps(9, end) both; }
+    @keyframes boot { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .screen-menu { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 2px; }
+    .screen-button {
+      border: 1px solid var(--lcd-ink);
+      border-radius: 1px;
+      background: transparent;
+      color: var(--lcd-ink);
+      font: inherit;
+      padding: 5px 8px;
+    }
+    .screen .screen-button:focus-visible { outline-color: var(--lcd-ink); outline-offset: 1px; }
+    .screen-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-color: transparent;
+      text-align: left;
+    }
+    .screen-option:not([aria-current='true']) { border-bottom-color: #47542e43; }
+    .screen-option[aria-current='true'], .screen-button:hover { background: var(--lcd-ink); color: #d9dfa7; }
+    .lcd-content { display: grid; gap: 6px; justify-items: start; }
+    .lcd-content h2 { font-size: clamp(15px, 6.1cqw, 24px); line-height: 1.05; letter-spacing: -.045em; }
+    .lcd-content p { max-width: 33ch; }
+    .lcd-panel { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; gap: 10px; }
+    .lcd-panel-body { align-self: center; }
+    .lcd-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      min-height: 24px;
+      padding: 3px 6px;
+      border: 1px solid #58683b7d;
+      color: #32401d;
+      background: #7e915935;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+    .lcd-markers { display: inline-flex; align-items: center; gap: 4px; }
+    .lcd-markers i { width: 6px; aspect-ratio: 1; border: 1px solid #3f4f28; }
+    .lcd-markers i.active { background: #3f4f28; }
+    .lcd-tags { display: flex; flex-wrap: wrap; gap: 4px; font-size: 9px; text-transform: uppercase; }
+    .lcd-tags span { border: 1px solid #58683b83; padding: 3px 5px; }
+    .lcd-block-link { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; min-height: 32px; text-decoration: none; text-align: left; }
+    .project-card { grid-template-columns: clamp(40px, 21cqw, 78px) minmax(0, 1fr); align-items: center; gap: 12px; }
+    .project-card .lcd-content { gap: 5px; }
+    .sprite { display: grid; width: 100%; grid-template-columns: repeat(var(--pixels), 1fr); align-self: start; }
+    .sprite span { aspect-ratio: 1; }
+    .pixel-1 { background: #303b1d; }
+    .pixel-2 { background: #758549; }
+    .pixel-3 { background: #e3e9aa; }
+    .sprite.project-icon { margin-top: 2px; border: 1px solid #5a6739a1; padding: 4px; }
+    .profile { grid-template-columns: clamp(59px, 28cqw, 104px) minmax(0, 1fr); align-items: center; gap: clamp(8px, 3.2cqw, 16px); }
+    .avatar-frame { width: 100%; align-self: center; padding: 4px; border: 1px solid #687548; background: #8a9b5459; box-shadow: inset 0 0 0 2px #d4dfa37d; }
+    .avatar-art {
+      display: block;
+      width: 100%;
+      aspect-ratio: 8 / 9;
+      background-repeat: no-repeat;
+      background-size: 600% 100%;
+      background-position: 0 0;
+      image-rendering: pixelated;
+      animation: avatar-greeting 1440ms steps(1, end) 220ms both;
+    }
+    @keyframes avatar-greeting {
+      0% { background-position: 0 0; }
+      18% { background-position: 20% 0; }
+      26% { background-position: 40% 0; }
+      46% { background-position: 60% 0; }
+      66% { background-position: 80% 0; }
+      86%, 100% { background-position: 100% 0; }
+    }
+    .profile .lcd-content p { max-width: 23ch; }
+    .lcd-lead { line-height: 1.1; text-wrap: balance; }
+    .identity { grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 14px; }
+    .identity img { display: block; width: 100%; height: 100px; object-fit: contain; filter: brightness(.25) sepia(1) hue-rotate(28deg); }
+    .skill-list { display: grid; grid-auto-rows: minmax(0, 1fr); align-self: stretch; margin: 0; padding: 0; list-style: none; }
+    .skill-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(36px, 26%); align-items: center; gap: 6px; border-bottom: 1px solid #4e5b3446; }
+    .skill-pattern { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; }
+    .skill-pattern i { height: 7px; border: 1px solid #4e5b3480; }
+    .skill-pattern i.active { border-color: #394824; background: #394824; }
+    .contact { grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 9px; }
+    .contact-icon { display: grid; place-items: center; width: 100%; aspect-ratio: 1; color: #d9dfa7; background: var(--lcd-ink); font-size: 11px; }
+    .controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 22px; }
+    .dpad {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      width: clamp(96px, 35cqw, 125px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1e2120 52%, #2c3030 72%);
+      box-shadow: inset 0 2px 5px #121515;
+    }
+    .direction, .dpad-center {
+      display: grid;
+      place-items: center;
+      border: 0;
+      color: #dad8cd;
+      background: #151818;
+      box-shadow: inset 0 1px #5b5f5c, 0 2px 1px #0f1111;
+      font: 700 16px/1 system-ui, sans-serif;
+    }
+    .direction:focus-visible { position: relative; z-index: 1; }
+    .direction:active, .direction.pressed { background: #383c39; box-shadow: inset 1px 2px 3px #111; }
+    .up { grid-area: 1 / 2; border-radius: 6px 6px 0 0; }
+    .left { grid-area: 2 / 1; border-radius: 6px 0 0 6px; }
+    .dpad-center { grid-area: 2 / 2; }
+    .dpad-center::before { content: ''; width: 13px; aspect-ratio: 1; border-radius: 50%; background: #1e2220; }
+    .right { grid-area: 2 / 3; border-radius: 0 6px 6px 0; }
+    .down { grid-area: 3 / 2; border-radius: 0 0 6px 6px; }
+    .round-controls { display: flex; gap: 11px; align-items: start; transform: rotate(-13deg); }
+    .action-set { display: grid; gap: 5px; justify-items: center; color: #e0dcce; font: 700 11px/1 var(--mono); }
+    .action {
+      width: clamp(43px, 16cqw, 53px);
+      aspect-ratio: 1;
+      border: 1px solid #161817;
+      border-radius: 50%;
+      background: linear-gradient(150deg, #666b64, #3e4541);
+      box-shadow: 0 3px 0 #121515, 0 0 0 4px #171b15a8, inset 0 1px 2px #b9baaa75, 0 5px 9px #1119;
+    }
+    .action.primary { background: radial-gradient(ellipse at 35% 25%, #fa7b65, #df4d3e 60%, #a32d23); }
+    .action:active, .action.pressed { transform: translateY(2px); box-shadow: 0 1px 0 #161817, inset 0 2px 5px #25181180; }
+    .device-bottom { display: flex; align-items: center; justify-content: flex-end; min-height: 32px; margin-top: 8px; }
+    .speaker { display: flex; gap: 5px; transform: rotate(-16deg); margin-right: 5px; }
+    .speaker i { width: 3px; height: 21px; border-radius: 3px; background: #151919; box-shadow: 1px 0 #555b56; }
+    .speaker i:nth-child(1), .speaker i:nth-child(5) { height: 14px; align-self: center; }
+    .status { position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap; clip-path: inset(50%); }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: minmax(150px, 1fr) minmax(300px, 380px) minmax(143px, .85fr); gap: 25px; }
+      .help dl div { grid-template-columns: 75px minmax(0, 1fr); gap: 6px; }
+      .help kbd { min-width: 16px; }
+      .lcd { font-size: 13px; }
+    }
+    @media (max-width: 730px) {
+      .page { width: min(100% - 36px, 500px); }
+      .layout { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 32px; padding-block: 26px 34px; }
+      .backdrop { display: none; }
+      .intro, .help { width: 100%; max-width: 395px; }
+      .intro .disciplines { max-width: 38ch; margin-top: 9px; }
+      h1 { font-size: clamp(39px, 9vw, 62px); margin-block: 9px 5px; }
+      .stage { width: min(100%, 426px); padding-block: 6px 18px; }
+      .console { width: min(100% - 30px, 416px); transform: rotate(-3deg); }
+      .help dl div { grid-template-columns: 84px minmax(0, 1fr); }
+    }
+    @media (max-width: 390px) {
+      .console { padding-inline: 15px; }
+      .bezel { padding-inline: 8px; }
+      .lcd { height: clamp(284px, 44svh, 310px); padding-inline: 9px; font-size: 11px; }
+      .lcd::after { opacity: .38; }
+      .lcd-top, .lcd-bottom { font-size: 9px; }
+      .project-card { grid-template-columns: 36px minmax(0, 1fr); gap: 7px; }
+      .lcd-strip { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.change, .boot-fill, .lcd.booting::after, .avatar-art { animation: none; }
+      .power-thumb { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="layout">
+      <span class="backdrop" aria-hidden="true">KYRIDI</span>
+      <section class="intro" aria-labelledby="title">
+        <p class="eyebrow">Портфолио KYRIDI</p>
+        <h1 id="title" lang="en">Emotion needs <em>structure.</em></h1>
+        <p class="disciplines">Айдентика, графический дизайн и арт-дирекшн.</p>
+      </section>
+
+      <section class="stage" aria-label="Карманная консоль">
+        <div class="console">
+          <div class="topline">
+            <span class="device-brand">KYRIDI</span>
+            <button class="power" type="button" aria-label="Питание" aria-pressed="false" data-action="power">
+              <span class="power-label power-off" aria-hidden="true">OFF</span>
+              <span class="power-track" aria-hidden="true"><span class="power-thumb"></span></span>
+              <span class="power-label power-on" aria-hidden="true">ON</span>
+              <span class="power-led" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="bezel">
+            <div class="lcd off" id="lcd" aria-label="LCD-дисплей">
+              <div class="lcd-top"><span id="screen-label"></span><span id="screen-page"></span></div>
+              <div class="screen" id="screen"></div>
+              <div class="lcd-bottom"><span id="screen-hint"></span><span id="screen-home"></span></div>
+            </div>
+            <div class="device-label" aria-hidden="true"><span>DOT MATRIX DISPLAY</span><span>K–01</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="dpad" role="group" aria-label="Крестовина">
+              <button class="direction up" type="button" data-action="up" aria-label="Вверх">↑</button>
+              <button class="direction left" type="button" data-action="left" aria-label="Влево">←</button>
+              <span class="dpad-center" aria-hidden="true"></span>
+              <button class="direction right" type="button" data-action="right" aria-label="Вправо">→</button>
+              <button class="direction down" type="button" data-action="down" aria-label="Вниз">↓</button>
+            </div>
+            <div class="round-controls">
+              <div class="action-set"><button class="action" type="button" data-action="back" aria-label="B — назад"></button><span aria-hidden="true">B</span></div>
+              <div class="action-set"><button class="action primary" type="button" data-action="confirm" aria-label="A — открыть"></button><span aria-hidden="true">A</span></div>
+            </div>
+          </div>
+
+          <div class="device-bottom">
+            <div class="speaker" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+        <p class="status" id="status" role="status"></p>
+      </section>
+
+      <aside class="help" aria-labelledby="help-title">
+        <p class="eyebrow">Управление</p>
+        <h2 id="help-title">Как играть</h2>
+        <p class="help-note">Нажимай кнопки на корпусе или играй с клавиатуры.</p>
+        <dl>
+          <div><dt><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></dt><dd>Выбрать раздел или листать работы</dd></div>
+          <div><dt><kbd class="accent-key">A</kbd><span>/</span><kbd>Z</kbd></dt><dd>Открыть выбранное</dd></div>
+          <div><dt><kbd>B</kbd><span>/</span><kbd>X</kbd></dt><dd>Вернуться на шаг</dd></div>
+          <div><dt><kbd>Enter</kbd></dt><dd>В главное меню</dd></div>
+        </dl>
+      </aside>
+    </main>
+
+  </div>
+
+  <script>
+    'use strict';
+
+    const sections = [
+      { id: 'work', title: 'Проекты' },
+      { id: 'about', title: 'Обо мне' },
+      { id: 'skills', title: 'Навыки' },
+      { id: 'approach', title: 'Подход' },
+      { id: 'identity', title: 'Айдентика' },
+      { id: 'contact', title: 'Telegram' }
+    ];
+    const skills = [
+      { name: 'Графический дизайн', pattern: '11100111' },
+      { name: 'Айдентика', pattern: '11111100' },
+      { name: 'Типографика', pattern: '11011011' },
+      { name: 'Арт-дирекшн', pattern: '10111101' },
+      { name: 'Визуальные системы', pattern: '00111111' }
+    ];
+    const telegramChannel = 't.me/kyridi_design';
+    const projects = [
+      {
+        name: 'CONCRETE', category: 'Материал и форма', summary: 'Масса, бумага и архитектурный ритм.',
+        detail: 'Архитектурная композиция, в которой плоскости бумаги складываются в объём. В центре проекта — масса, глубина и структура.',
+        tags: ['Бумага', 'Объём', 'Ритм'],
+        icon: ['0000000','0011100','0111120','1111220','1111220','1122200','1220000']
+      },
+      {
+        name: 'GLOSS', category: 'Поверхность и оптика', summary: 'Блик, отражение и оптическое искажение.',
+        detail: 'Глянцевая поверхность меняет восприятие формы. Блик, отражение и искажение собирают композицию в движении.',
+        tags: ['Блик', 'Поверхность', 'Отражение'],
+        icon: ['0002000','0023200','0233320','2331332','0233320','0023200','0002000']
+      },
+      {
+        name: 'THREE STATES', category: 'Движение и свет', summary: 'Три состояния — Stare, Fall, Ember.',
+        detail: 'Stare держит фокус, Fall смещает ощущение веса, Ember переводит внимание к свету. Три состояния одной визуальной системы.',
+        tags: ['Stare', 'Fall', 'Ember'],
+        icon: ['1100000','1100000','0022000','0022000','0000330','0000330','0002222']
+      }
+    ];
+    const avatar = [
+      '0000000000000000',
+      '0000011111100000',
+      '0000111111110000',
+      '0001122222111000',
+      '0001123332211000',
+      '0000123131310000',
+      '0000123333210000',
+      '0000012332100000',
+      '0000001221000000',
+      '0000011111100000',
+      '0001111211111000',
+      '0011211221121100',
+      '0012211211122100',
+      '0000111111110000',
+      '0000111001110000',
+      '0000111001110000',
+      '0001111001111000',
+      '0022222222222200'
+    ];
+    const loweredLids = { 5: '0000123333310000', 6: '0000123111310000' };
+    const raisedArm = { 6: '0000123333210110', 7: '0000012332100120', 8: '0000001221000120',
+      9: '0000011111101120', 10: '0001111211111100', 11: '0011211221110000', 12: '0012211211110000' };
+    const wavedArm = { ...raisedArm, 6: avatar[6], 7: '0000012332100011', 8: '0000001221000110' };
+    const avatarArt = buildAvatarArt();
+    const identityMark = 'data:image/png;base64,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';
+    const stage = document.querySelector('.stage');
+    const screen = document.querySelector('#screen');
+    const lcd = document.querySelector('#lcd');
+    const power = document.querySelector('.power');
+    const label = document.querySelector('#screen-label');
+    const page = document.querySelector('#screen-page');
+    const hint = document.querySelector('#screen-hint');
+    const home = document.querySelector('#screen-home');
+    const status = document.querySelector('#status');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const pressTimers = new WeakMap();
+    const lcdShutdownDuration = 440;
+    let view = 'off';
+    let selected = 0;
+    let projectIndex = 0;
+    let bootTimer;
+    let shutdownTimer;
+    let tabNavigation = false;
+
+    function pixelSprite(rows, className = '') {
+      const pixels = Array.from(rows.join(''), cell => `<span class="pixel-${cell}"></span>`).join('');
+      return `<span class="sprite ${className}" aria-hidden="true" style="--pixels:${rows[0].length}">${pixels}</span>`;
+    }
+
+    function buildAvatarArt() {
+      const edits = [{}, loweredLids, raisedArm, wavedArm, raisedArm, {}];
+      const palette = ['', '#303b1d', '#758549', '#e3e9aa'];
+      const width = avatar[0].length;
+      const sheet = document.createElement('canvas');
+      sheet.width = width * edits.length;
+      sheet.height = avatar.length;
+      const context = sheet.getContext('2d');
+      if (!context) return pixelSprite(avatar);
+
+      edits.forEach((frame, index) => {
+        avatar.forEach((defaultRow, y) => {
+          Array.from(frame[y] ?? defaultRow).forEach((pixel, x) => {
+            if (pixel === '0') return;
+            context.fillStyle = palette[pixel];
+            context.fillRect(index * width + x, y, 1, 1);
+          });
+        });
+      });
+      return `<span class="avatar-art" aria-hidden="true" style="background-image:url('${sheet.toDataURL()}')"></span>`;
+    }
+
+    function lcdPanel(caption, body, bottom, indicator = '') {
+      return `<div class="lcd-panel"><div class="lcd-strip"><span>${caption}</span>${indicator}</div>${body}${bottom}</div>`;
+    }
+
+    function lcdTags(labels) {
+      return `<div class="lcd-tags">${labels.map(item => `<span>${item}</span>`).join('')}</div>`;
+    }
+
+    function getScreen() {
+      switch (view) {
+        case 'off':
+          return { title: 'Консоль выключена', html: '' };
+        case 'boot':
+          return { title: 'Загрузка', html: '<div class="boot"><strong>KYRIDI / K–01</strong><div class="boot-track" aria-hidden="true"><div class="boot-fill"></div></div><span>Загрузка портфолио</span></div>' };
+        case 'menu':
+          return {
+            title: 'Главное меню', page: 'K–01', hint: '↑ ↓ ВЫБОР', home: 'A ОТКРЫТЬ', announcement: sections[selected].title,
+            html: `<div class="screen-menu">${sections.map((section, index) => `<button type="button" class="screen-button screen-option" data-section="${index}" aria-current="${index === selected}"><span>${index === selected ? '▸ ' : ''}${section.title}</span><span>0${index + 1}</span></button>`).join('')}</div>`
+          };
+        case 'work': {
+          const project = projects[projectIndex];
+          const markers = projects.map((_, index) => `<i class="${index === projectIndex ? 'active' : ''}"></i>`).join('');
+          return {
+            title: 'Проекты', page: `${projectIndex + 1}/${projects.length}`, hint: '← → ЛИСТАТЬ', home: 'B НАЗАД', announcement: project.name,
+            html: lcdPanel(
+              project.category,
+              `<div class="lcd-content lcd-panel-body project-card">${pixelSprite(project.icon, 'project-icon')}<div class="lcd-content"><h2>${project.name}</h2><p>${project.summary}</p></div></div>`,
+              '<button type="button" class="screen-button lcd-block-link" data-action="confirm">Открыть проект <span aria-hidden="true">→</span></button>',
+              `<span class="lcd-markers" aria-hidden="true">${markers}</span>`
+            )
+          };
+        }
+        case 'project': {
+          const project = projects[projectIndex];
+          return {
+            title: project.name, page: `${projectIndex + 1}/${projects.length}`, hint: 'B НАЗАД', home: 'ENTER МЕНЮ',
+            html: lcdPanel('Кейс KYRIDI', `<div class="lcd-content lcd-panel-body"><h2 class="lcd-lead">${project.category}</h2><p>${project.detail}</p></div>`, lcdTags(project.tags))
+          };
+        }
+        case 'about':
+          return {
+            title: 'Обо мне', page: 'Профиль', hint: 'B НАЗАД', home: 'ENTER МЕНЮ',
+            html: lcdPanel(
+              'Игрок 01',
+              `<div class="lcd-content lcd-panel-body profile"><div class="avatar-frame" role="img" aria-label="Пиксельный аватар KYRIDI">${avatarArt}</div><div class="lcd-content"><h2>KYRIDI</h2><p>Мне интересно, как форма и движение меняют то, что мы чувствуем.</p></div></div>`,
+              lcdTags(['Графдизайн', 'Айдентика', 'Арт-дирекшн']),
+              '<span class="lcd-markers" aria-hidden="true"><i class="active"></i><i></i><i class="active"></i></span>'
+            )
+          };
+        case 'skills': {
+          const rows = skills.map(skill => {
+            const pattern = Array.from(skill.pattern, bit => `<i class="${bit === '1' ? 'active' : ''}"></i>`).join('');
+            return `<li><span>${skill.name}</span><span class="skill-pattern" aria-hidden="true">${pattern}</span></li>`;
+          });
+          return {
+            title: 'Навыки', page: '05', hint: 'B НАЗАД', home: 'ENTER МЕНЮ',
+            html: lcdPanel('Дизайн и арт-дирекшн', `<ul class="skill-list" aria-label="Навыки KYRIDI">${rows.join('')}</ul>`, lcdTags(['Визуальная практика']))
+          };
+        }
+        case 'approach':
+          return {
+            title: 'Подход', hint: 'B НАЗАД', home: 'ENTER МЕНЮ',
+            html: lcdPanel('Принцип KYRIDI', '<div class="lcd-content lcd-panel-body"><h2 class="lcd-lead" lang="en">Emotion needs structure.</h2><p>Задаю правила для композиции и типографики. Движение помогает их увидеть.</p></div>', lcdTags(['Композиция', 'Типографика', 'Движение']))
+          };
+        case 'identity':
+          return {
+            title: 'Айдентика', hint: 'B НАЗАД', home: 'ENTER МЕНЮ',
+            html: lcdPanel('Визуальный язык', `<div class="lcd-content lcd-panel-body identity"><img alt="KYRIDI / DESIGN / 2026" src="${identityMark}"><div class="lcd-content"><h2 class="lcd-lead">Один знак.<br>Разные формы.</h2><p>Буква K меняет масштаб и кадрирование, сохраняя характер.</p></div></div>`, lcdTags(['Масштаб', 'Кадрирование']))
+          };
+        case 'contact':
+          return {
+            title: 'Telegram', hint: 'B НАЗАД', home: 'A ОТКРЫТЬ',
+            html: lcdPanel(
+              'Telegram-канал',
+              '<div class="lcd-content lcd-panel-body contact"><span class="contact-icon" aria-hidden="true">TG</span><div class="lcd-content"><h2>KYRIDI DESIGN</h2><p>Графический дизайн и айдентика.</p></div></div>',
+              `<a class="screen-button lcd-block-link" href="https://${telegramChannel}" target="_blank" rel="noopener noreferrer">${telegramChannel} <span aria-hidden="true">↗</span></a>`
+            )
+          };
+      }
+    }
+
+    function render(animate = true) {
+      const content = getScreen();
+      const restoreFocus = screen.contains(document.activeElement);
+      lcd.classList.toggle('off', view === 'off');
+      lcd.classList.toggle('booting', view === 'boot');
+      lcd.classList.remove('shutting-down');
+      screen.dataset.view = view;
+      screen.inert = false;
+      power.setAttribute('aria-pressed', String(view !== 'off'));
+      label.textContent = content.title;
+      page.textContent = content.page ?? '';
+      hint.textContent = content.hint ?? '';
+      home.textContent = content.home ?? '';
+      screen.innerHTML = content.html;
+      screen.classList.remove('change');
+      if (animate) {
+        void screen.offsetWidth;
+        screen.classList.add('change');
+      }
+      status.textContent = [content.title, content.announcement].filter(Boolean).join('. ');
+      if (restoreFocus) {
+        const target = screen.querySelector('[aria-current="true"]') ?? screen.querySelector('button, a[href]') ?? stage.querySelector('.action.primary');
+        target.focus({ preventScroll: true });
+      }
+    }
+
+    function startConsole() {
+      clearTimeout(shutdownTimer);
+      selected = 0;
+      projectIndex = 0;
+      view = 'boot';
+      render(false);
+      bootTimer = setTimeout(() => {
+        view = 'menu';
+        render();
+      }, reduceMotion.matches ? 0 : 1050);
+    }
+
+    function powerOff() {
+      clearTimeout(bootTimer);
+      const finish = () => {
+        view = 'off';
+        render(false);
+      };
+      if (reduceMotion.matches || view === 'boot') {
+        finish();
+        return;
+      }
+
+      view = 'shutdown';
+      power.setAttribute('aria-pressed', 'false');
+      status.textContent = 'Консоль выключается';
+      screen.inert = true;
+      lcd.classList.add('shutting-down');
+      shutdownTimer = setTimeout(finish, lcdShutdownDuration);
+    }
+
+    function openSection(index) {
+      selected = index;
+      if (sections[index].id === 'work') projectIndex = 0;
+      view = sections[index].id;
+      render();
+    }
+
+    function move(direction) {
+      const delta = direction === 'up' || direction === 'left' ? -1 : 1;
+      if (view === 'menu' && (direction === 'up' || direction === 'down')) {
+        selected = (selected + delta + sections.length) % sections.length;
+        render();
+      } else if (view === 'work' && (direction === 'left' || direction === 'right')) {
+        projectIndex = (projectIndex + delta + projects.length) % projects.length;
+        render();
+      }
+    }
+
+    function act(action) {
+      if (action === 'power') {
+        if (view === 'off' || view === 'shutdown') startConsole();
+        else powerOff();
+        return;
+      }
+      if (view === 'off' || view === 'boot' || view === 'shutdown') return;
+      if (action === 'confirm') {
+        if (view === 'menu') openSection(selected);
+        else if (view === 'work') {
+          view = 'project';
+          render();
+        } else if (view === 'contact') {
+          screen.querySelector('a').click();
+        }
+      } else if (action === 'back' || action === 'home') {
+        if (view === 'menu') return;
+        view = action === 'back' && view === 'project' ? 'work' : 'menu';
+        render();
+      } else {
+        move(action);
+      }
+    }
+
+    stage.addEventListener('click', event => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.dataset.section !== undefined) openSection(Number(button.dataset.section));
+      else act(button.dataset.action);
+    });
+
+    document.addEventListener('pointerdown', () => { tabNavigation = false; });
+
+    const keys = {
+      ArrowUp: 'up', ArrowLeft: 'left', ArrowDown: 'down', ArrowRight: 'right',
+      KeyZ: 'confirm', KeyX: 'back', Enter: 'home'
+    };
+
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Tab') {
+        tabNavigation = true;
+        return;
+      }
+      const action = keys[event.code];
+      if (!action || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (action === 'home' && tabNavigation && event.target.closest('button, a[href]')) return;
+      if (view === 'off' || view === 'boot' || view === 'shutdown') return;
+      tabNavigation = false;
+      event.preventDefault();
+      if (event.repeat && ['confirm', 'back', 'home'].includes(action)) return;
+      const button = stage.querySelector('.controls [data-action="' + action + '"]');
+      if (button) {
+        clearTimeout(pressTimers.get(button));
+        button.classList.add('pressed');
+        pressTimers.set(button, setTimeout(() => button.classList.remove('pressed'), 135));
+      }
+      act(action);
+    });
+
+    startConsole();
+  </script>
+</body>
+</html>
